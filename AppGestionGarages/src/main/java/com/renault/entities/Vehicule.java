@@ -3,7 +3,7 @@ package com.renault.entities;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.renault.enums.TypeVehicule;
+import com.renault.enums.TypeCarburant;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -33,9 +33,8 @@ public class Vehicule {
 	private String brand;
 	private String model;
 	@Enumerated(EnumType.STRING)
-	private TypeVehicule typeVehicule; // enum
+	private TypeCarburant typeCarburant; // enum
 	private int anneeFabrication;
-	private String typeCarburant;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Garage garage;

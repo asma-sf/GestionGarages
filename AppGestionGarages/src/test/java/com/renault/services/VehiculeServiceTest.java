@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageLimitVehiculeException;
 import com.renault.repositories.GarageRepository;
@@ -56,15 +56,15 @@ public class VehiculeServiceTest {
 		// Créer un garage avec 50 véhicules
 		testGarageMaxVehicule = Garage.builder().id(1L).build();
 		
-        List<Vehicle> vehicules = new ArrayList<>();
+        List<Vehicule> vehicules = new ArrayList<>();
         for (int i = 0; i < MAX_VEHICULES; i++) {
-            Vehicle v =Vehicle.builder().id((long) i).build();
+            Vehicule v =Vehicule.builder().id((long) i).build();
             vehicules.add(v);
         }
         testGarageMaxVehicule.setVehicules(vehicules);
 	}
-	private Vehicle createTestVehicule() {
-		Vehicle vehicule =Vehicle.builder()
+	private Vehicule createTestVehicule() {
+		Vehicule vehicule =Vehicule.builder()
 				.id(1L)
     			.brand("Renault")
     			.anneeFabrication(2021)
@@ -95,17 +95,17 @@ public class VehiculeServiceTest {
 		 
 		 // Création des objets de test
 	    Garage garage = createTestGarage();
-	    Vehicle vehicule = createTestVehicule();
+	    Vehicule vehicule = createTestVehicule();
 	 // Vérifier que la liste est bien initialisée
 	    assertNotNull(garage.getVehicules());
 
 	    // Mock des repositories
 	    when(garageRepository.findById(garage.getId())).thenReturn(Optional.of(garage));
 	    when(garageRepository.save(any(Garage.class))).thenAnswer(invocation -> invocation.getArgument(0));
-	    when(vehiculeRepository.save(any(Vehicle.class))).thenAnswer(invocation -> invocation.getArgument(0));
+	    when(vehiculeRepository.save(any(Vehicule.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 	    // Appel à la méthode à tester
-	    Vehicle vehiculeResult = vehiculeService.addVehiculeToGarage(garage.getId(), vehicule);
+	    Vehicule vehiculeResult = vehiculeService.addVehiculeToGarage(garage.getId(), vehicule);
 
 	    // Vérifications
 	    assertNotNull(vehiculeResult);
@@ -126,7 +126,7 @@ public class VehiculeServiceTest {
         when(garageRepository.findById(1L)).thenReturn(Optional.of(testGarageMaxVehicule));
 
         // Vérifier que l'exception est levée
-        Vehicle newVehicule = new Vehicle();
+        Vehicule newVehicule = new Vehicule();
         Exception exception = assertThrows(GarageLimitVehiculeException.class, () -> {
         	vehiculeService.addVehiculeToGarage(1L, newVehicule);
         });
@@ -140,7 +140,7 @@ public class VehiculeServiceTest {
 	@Test
 	void testUpdateVehicule() {
 		// création de l'objet vehicule
-		Vehicle vehicule = createTestVehicule();
+		Vehicule vehicule = createTestVehicule();
 		 // Simuler la récupération du vehciule par ID	
 		when(vehiculeRepository.findById(1L)).thenReturn(java.util.Optional.of(vehicule));
 		// modifier les données
@@ -149,7 +149,7 @@ public class VehiculeServiceTest {
 		
 
 		// appel de la méthode à tester
-		Vehicle vehiculeUpdated = vehiculeService.updateVehicule(1L, vehicule);
+		Vehicule vehiculeUpdated = vehiculeService.updateVehicule(1L, vehicule);
 		 // Vérification du vehicule
 		assertNotNull(vehiculeUpdated);
 		assertEquals("HYBRID", vehiculeUpdated.getTypeCarburant().toString());
@@ -161,7 +161,7 @@ public class VehiculeServiceTest {
 	@Test
     void testDeleteVehicule() {
 		// création de l'objet vehicule
-		Vehicle vehicule = createTestVehicule();
+		Vehicule vehicule = createTestVehicule();
 		// Simuler la récupération du vehciule par ID		
 		when(vehiculeRepository.findById(1L)).thenReturn(java.util.Optional.of(vehicule));
      // Simuler la suppression du vehicule
@@ -174,14 +174,14 @@ public class VehiculeServiceTest {
 	@Test
 	void testGetVehiculeByGarage() {
 		// création des objets véhicules
-		Vehicle vehicule1= createTestVehicule();
-		Vehicle vehicule2 =Vehicle.builder()
+		Vehicule vehicule1= createTestVehicule();
+		Vehicule vehicule2 =Vehicule.builder()
     			.brand("Renault")
     			.anneeFabrication(2022)
     			.model("CLIO")
     			.typeCarburant(TypeCarburant.GASOIL)
     			.build();
-		Vehicle vehicule3 =Vehicle.builder()
+		Vehicule vehicule3 =Vehicule.builder()
     			.brand("Renault")
     			.anneeFabrication(2022)
     			.model("Megan")
@@ -189,8 +189,8 @@ public class VehiculeServiceTest {
     			.build();	
     	
 		  // Création d'une liste de vehicules qui sera ajoutée aux garages
-    	List<Vehicle> vehicules1 = Arrays.asList(vehicule1,vehicule2,vehicule3);
-    	List<Vehicle> vehicules2 = Arrays.asList(vehicule1,vehicule2);
+    	List<Vehicule> vehicules1 = Arrays.asList(vehicule1,vehicule2,vehicule3);
+    	List<Vehicule> vehicules2 = Arrays.asList(vehicule1,vehicule2);
     	
     	// Création du garage et association des vehicules à ce garage
     	Garage garage = createTestGarage();
@@ -199,7 +199,7 @@ public class VehiculeServiceTest {
     	 // Simulation de la récupération du garage par ID depuis le repository
     	when(garageRepository.findById(1L)).thenReturn(java.util.Optional.of(garage));
     	 // appel à la méthode à tester
-		 List<Vehicle> vehiculesResult = vehiculeService.getVehiculeByGarage(1L);
+		 List<Vehicule> vehiculesResult = vehiculeService.getVehiculeByGarage(1L);
 		 // Vérifications des résultats
 		 assertNotNull(vehiculesResult);
 		 assertEquals(2, vehiculesResult.size());
@@ -212,26 +212,26 @@ public class VehiculeServiceTest {
 	@Test
 	void testGetVehiculeByModel() {
 		// création des objets véhicules
-				Vehicle vehicule1= createTestVehicule();
-				Vehicle vehicule2 =Vehicle.builder()
+				Vehicule vehicule1= createTestVehicule();
+				Vehicule vehicule2 =Vehicule.builder()
 		    			.brand("Renault")
 		    			.anneeFabrication(2022)
 		    			.model("CLIO")
 		    			.typeCarburant(TypeCarburant.GASOIL)
 		    			.build();
-				Vehicle vehicule3 =Vehicle.builder()
+				Vehicule vehicule3 =Vehicule.builder()
 		    			.brand("Renault")
 		    			.anneeFabrication(2020)
 		    			.model("CLIO")
 		    			.typeCarburant(TypeCarburant.GASOIL)
 		    			.build();
-				List<Vehicle> vehiculesExpected = Arrays.asList(vehicule2,vehicule3);
+				List<Vehicule> vehiculesExpected = Arrays.asList(vehicule2,vehicule3);
 				
 				// Simuler la récupération des véhicules par model depuis le repository
 			    when(vehiculeRepository.findByModel("CLIO")).thenReturn(vehiculesExpected);
 			    
 		    // appel à la méthode à tester
-			List<Vehicle> vehiculesResult = vehiculeService.getVehiculeByModel("CLIO");
+			List<Vehicule> vehiculesResult = vehiculeService.getVehiculeByModel("CLIO");
 			 // Vérifications des résultats
 			 assertNotNull(vehiculesResult);
 			 assertEquals(2, vehiculesResult.size());

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-import com.renault.entities.Accessory;
+import com.renault.entities.Accessoire;
 import com.renault.entities.Garage;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageLimitVehiculeException;
 import com.renault.exceptions.GarageNotFoundException;
@@ -32,7 +32,7 @@ public class VehiculeServiceImpl implements VehiculeService {
 	
 
 	@Override
-	public Vehicle addVehiculeToGarage(Long garageId, Vehicle vehicule) {
+	public Vehicule addVehiculeToGarage(Long garageId, Vehicule vehicule) {
 
 		if(vehicule ==null) {
 			throw new IllegalArgumentException("Le vehicule ne peut pas être null");
@@ -55,12 +55,12 @@ public class VehiculeServiceImpl implements VehiculeService {
 		vehicule.setGarage(garage);
 
 		if (vehicule.getAccessoires() != null) {
-			for (Accessory acc : vehicule.getAccessoires()) {
+			for (Accessoire acc : vehicule.getAccessoires()) {
 				acc.setVehicule(vehicule); // Associer chaque accessoire au véhicule
 			}
 		}
 
-		Vehicle savedVehicule = vehiculeRepository.save(vehicule);
+		Vehicule savedVehicule = vehiculeRepository.save(vehicule);
 		// Ajouter le véhicule à la liste du garage 
 		garage.getVehicules().add(savedVehicule);
 
@@ -70,11 +70,11 @@ public class VehiculeServiceImpl implements VehiculeService {
 	}
 
 
-	public Vehicle updateVehicule(Long vehiculeId, Vehicle vehicule) {
+	public Vehicule updateVehicule(Long vehiculeId, Vehicule vehicule) {
 		log.info("Update vehicule with ID {}", vehiculeId);
 
 		// Récupérer le véhicule existant ou lever une exception s'il n'existe pas
-		Vehicle vehiculeToUpdate = vehiculeRepository.findById(vehiculeId)
+		Vehicule vehiculeToUpdate = vehiculeRepository.findById(vehiculeId)
 				.orElseThrow(() -> new VehiculeNotFoundException(vehiculeId));
 
 		// Mise à jour des champs seulement si les nouvelles valeurs ne sont pas nulles
@@ -109,7 +109,7 @@ public class VehiculeServiceImpl implements VehiculeService {
 	@Override
 	public void deleteVehicule(Long vehiculeId) {
 		log.info("delete vehicule  with ID {}", vehiculeId);
-         Vehicle  vehicule = vehiculeRepository.findById(vehiculeId).orElseThrow(() -> new VehiculeNotFoundException(vehiculeId));
+         Vehicule  vehicule = vehiculeRepository.findById(vehiculeId).orElseThrow(() -> new VehiculeNotFoundException(vehiculeId));
       // Détacher le vehicule du garage s'il y en a un
          if(vehicule.getGarage()!= null) {
         	 vehicule.getGarage().getVehicules().remove(vehicule);
@@ -119,19 +119,19 @@ public class VehiculeServiceImpl implements VehiculeService {
 	}
 
 	@Override
-	public List<Vehicle> getVehiculeByGarage(Long garageId) {
+	public List<Vehicule> getVehiculeByGarage(Long garageId) {
 		log.info("get vehicules for garage with ID {}", garageId);
 		Garage garage = garageRepository.findById(garageId).orElseThrow(() -> new GarageNotFoundException(garageId));
 
-		List<Vehicle> vehicules = garage.getVehicules();
+		List<Vehicule> vehicules = garage.getVehicules();
 
 		return vehicules;
 	}
 
 	@Override
-	public List<Vehicle> getVehiculeByModel(String model) {
+	public List<Vehicule> getVehiculeByModel(String model) {
 		log.info("get vehicules by model {}", model);
-		List<Vehicle> vehicules = vehiculeRepository.findByModel(model);
+		List<Vehicule> vehicules = vehiculeRepository.findByModel(model);
 
 		return vehicules;
 	}

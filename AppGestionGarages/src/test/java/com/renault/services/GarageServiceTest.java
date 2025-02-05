@@ -27,11 +27,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.renault.entities.Accessory;
+import com.renault.entities.Accessoire;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.repositories.AccessoireRepository;
 import com.renault.repositories.GarageRepository;
@@ -300,19 +300,19 @@ public class GarageServiceTest {
                                 OpeningTime.builder().startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(18, 0)).build()))
                             .build()))*/
                     .build();
-        	Accessory accessoire1 = Accessory.builder()
+        	Accessoire accessoire1 = Accessoire.builder()
         			.name("Caméra")
         			.description("Caméra de recul")
         			.price(2000)
         			.type("Sécurité")
         			.build();
-        	Accessory accessoire2 = Accessory.builder()
+        	Accessoire accessoire2 = Accessoire.builder()
         			.name("GPS")
         			.description("Système de navigation intégré")
         			.price(2500)
         			.type("Sécurité")
         			.build();   	
-        	Accessory accessoire3 = Accessory.builder()
+        	Accessoire accessoire3 = Accessoire.builder()
         			.name("Ecran")
         			.description("Ecran tactil")
         			.price(1500)
@@ -320,10 +320,10 @@ public class GarageServiceTest {
         			.build();
 
 
-        	List<Accessory> accessoires1 = Arrays.asList(accessoire1, accessoire2);// ajouter GPS et camera
-            List<Accessory> accessoires2 = Arrays.asList(accessoire1); // ajouter que la camera
-            List<Accessory> accessoires3 = Arrays.asList(accessoire3); // ajouter que l'ecran
-        	Vehicle vehicule1 =Vehicle.builder()
+        	List<Accessoire> accessoires1 = Arrays.asList(accessoire1, accessoire2);// ajouter GPS et camera
+            List<Accessoire> accessoires2 = Arrays.asList(accessoire1); // ajouter que la camera
+            List<Accessoire> accessoires3 = Arrays.asList(accessoire3); // ajouter que l'ecran
+        	Vehicule vehicule1 =Vehicule.builder()
         			.brand("Renault")
         			.anneeFabrication(2021)
         			.model("Captur")
@@ -331,7 +331,7 @@ public class GarageServiceTest {
         			.typeCarburant(TypeCarburant.ESSENCE)
         			.garage(garage1)
         			.build();
-        	Vehicle vehicule2 =Vehicle.builder()
+        	Vehicule vehicule2 =Vehicule.builder()
         			.brand("Renault")
         			.anneeFabrication(2022)
         			.model("CLIO")
@@ -339,7 +339,7 @@ public class GarageServiceTest {
         			.typeCarburant(TypeCarburant.GASOIL)
         			.garage(garage2)
         			.build();
-        	Vehicle vehicule3 =Vehicle.builder()
+        	Vehicule vehicule3 =Vehicule.builder()
         			.brand("Renault")
         			.anneeFabrication(2022)
         			.model("Megan")
@@ -348,16 +348,16 @@ public class GarageServiceTest {
         			.garage(garage3)
         			.build();
         	
-        	List<Vehicle> vehiculesG1 = Arrays.asList(vehicule1,vehicule2);
-        	List<Vehicle> vehiculesG2 = Arrays.asList(vehicule1);
-        	List<Vehicle> vehiculesG3 = Arrays.asList(vehicule3);
+        	List<Vehicule> vehiculesG1 = Arrays.asList(vehicule1,vehicule2);
+        	List<Vehicule> vehiculesG2 = Arrays.asList(vehicule1);
+        	List<Vehicule> vehiculesG3 = Arrays.asList(vehicule3);
         	garage1.setVehicules(vehiculesG1);
         	garage2.setVehicules(vehiculesG2);
         	garage3.setVehicules(vehiculesG3);
         	 // Mock des repositories
             when(garageRepository.save(any(Garage.class))).thenReturn(garage1, garage2, garage3);
-            when(vehiculeRepository.save(any(Vehicle.class))).thenReturn(vehicule1, vehicule2, vehicule3);
-            when(accessoireRepository.save(any(Accessory.class))).thenReturn(accessoire1, accessoire2, accessoire3);
+            when(vehiculeRepository.save(any(Vehicule.class))).thenReturn(vehicule1, vehicule2, vehicule3);
+            when(accessoireRepository.save(any(Accessoire.class))).thenReturn(accessoire1, accessoire2, accessoire3);
 
             // on va chercher par l accesoire camera qui se trouve dans les deux vehicules une dans le garage A et la 2eme dans le garage 2
             List<Garage> garagesSearched = Arrays.asList(garage1,garage2);

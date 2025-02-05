@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageNotFoundException;
 import com.renault.repositories.GarageRepository;
@@ -166,13 +166,13 @@ public class GarageServiceImpl implements GarageService {
 		try {
 			TypeCarburant type = TypeCarburant.valueOf(vehiculeType.toUpperCase());
 			
-			List<Vehicle> vehicules = vehiculeRepository.findByTypeCarburant(type);
+			List<Vehicule> vehicules = vehiculeRepository.findByTypeCarburant(type);
 			
 			if (vehicules.isEmpty()) {
 				return Collections.emptyList();
 			}
 			// Suppression des doublons avec un Set
-			Set<Garage> garages = vehicules.stream().map(Vehicle::getGarage).filter(Objects::nonNull) // Évite les NullPointerException																										
+			Set<Garage> garages = vehicules.stream().map(Vehicule::getGarage).filter(Objects::nonNull) // Évite les NullPointerException																										
 					.collect(Collectors.toSet());
 			
 

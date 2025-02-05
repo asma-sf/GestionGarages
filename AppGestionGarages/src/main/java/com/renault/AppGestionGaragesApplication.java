@@ -36,7 +36,7 @@ public class AppGestionGaragesApplication {
 		SpringApplication.run(AppGestionGaragesApplication.class, args);
 	}
 
-	//@Bean
+	@Bean
 	CommandLineRunner commandLineRunner(GarageService garageService, GarageRepository garageRepository) {
 		return arg-> {
 			

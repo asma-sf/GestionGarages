@@ -21,8 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.renault.entities.Accessory;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Accessoire;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.repositories.AccessoireRepository;
 import com.renault.repositories.VehiculeRepository;
@@ -46,8 +46,8 @@ public class AccessoireServiceTest {
 		MockitoAnnotations.openMocks(this);
 	}
 	
-	private Accessory createTestAccessoire() {
-		return Accessory.builder()
+	private Accessoire createTestAccessoire() {
+		return Accessoire.builder()
 				.id(1L)
     			.name("Caméra")
     			.description("Caméra de recul")
@@ -56,8 +56,8 @@ public class AccessoireServiceTest {
     			.build();
 		
 	}
-	private Vehicle createTestVehciule() {
-		return Vehicle.builder()
+	private Vehicule createTestVehciule() {
+		return Vehicule.builder()
 				.id(1L)
     			.brand("Renault")
     			.anneeFabrication(2021)
@@ -71,19 +71,19 @@ public class AccessoireServiceTest {
 	@Test
 	void testAddAccessoireToVehicule() {
 	    // Création des objets de test
-	    Accessory accessoire = createTestAccessoire();
-	    Vehicle vehicule = createTestVehciule();
+	    Accessoire accessoire = createTestAccessoire();
+	    Vehicule vehicule = createTestVehciule();
 	    
 	    // Vérifier que la liste est bien initialisée
 	    assertNotNull(vehicule.getAccessoires());
 
 	    // Mock des repositories
 	    when(vehiculeRepository.findById(vehicule.getId())).thenReturn(Optional.of(vehicule));
-	    when(accessoireRepository.save(any(Accessory.class))).thenAnswer(invocation -> invocation.getArgument(0));
-	    when(vehiculeRepository.save(any(Vehicle.class))).thenAnswer(invocation -> invocation.getArgument(0));
+	    when(accessoireRepository.save(any(Accessoire.class))).thenAnswer(invocation -> invocation.getArgument(0));
+	    when(vehiculeRepository.save(any(Vehicule.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 	    // Appel à la méthode à tester
-	    Accessory accessoireResult = accessoireService.addAccessoireToVehicule(vehicule.getId(), accessoire);
+	    Accessoire accessoireResult = accessoireService.addAccessoireToVehicule(vehicule.getId(), accessoire);
 
 	    // Vérifications
 	    assertNotNull(accessoireResult);
@@ -102,7 +102,7 @@ public class AccessoireServiceTest {
 	@Test
 	void testUpdateAccessoire() {
 		// création de l'objet accessoire
-		Accessory accessoire = createTestAccessoire();
+		Accessoire accessoire = createTestAccessoire();
 		 // Simuler la récupération de l('accessoire par ID
 		
 		when(accessoireRepository.findById(1L)).thenReturn(java.util.Optional.of(accessoire));
@@ -110,7 +110,7 @@ public class AccessoireServiceTest {
 		accessoire.setPrice(2300);
 		
 		// appel de la méthode à tester
-		Accessory accessoireUpdated = accessoireService.updateAccessoire(1L, accessoire);
+		Accessoire accessoireUpdated = accessoireService.updateAccessoire(1L, accessoire);
 		 // Vérification du garage
 		assertNotNull(accessoireUpdated);
 		assertEquals("Caméra de recul", accessoireUpdated.getName());
@@ -122,7 +122,7 @@ public class AccessoireServiceTest {
 	 @Test
 	    void testDeleteAccesoire() {
 		// Création de l'accessoire
-	        Accessory accessoire = createTestAccessoire();
+	        Accessoire accessoire = createTestAccessoire();
 	        // Simuler la récupération de l'accesoire par ID
 	        when(accessoireRepository.findById(1L)).thenReturn(java.util.Optional.of(accessoire)); 
 	     // Simuler la suppression de l'accessoire
@@ -136,32 +136,32 @@ public class AccessoireServiceTest {
 	 @Test
 	 void testGetAccessoiresByVehicule() {
 		   // Création des accessoires
-		 Accessory accessoire1 = createTestAccessoire();
-		 Accessory accessoire2 = Accessory.builder()
+		 Accessoire accessoire1 = createTestAccessoire();
+		 Accessoire accessoire2 = Accessoire.builder()
 					.id(1L)
 	    			.name("GPS")
 	    			.description("Système de navigation intégré")
 	    			.price(1500)
 	    			.type("Electonique")
 	    			.build();
-     	Accessory accessoire3 = Accessory.builder()
+     	Accessoire accessoire3 = Accessoire.builder()
     			.name("Ecran")
     			.description("Ecran tactil")
     			.price(1500)
     			.type("Technologie")
     			.build();
      // Création d'une liste d'accessoires qui sera ajoutée au véhicule
-		 List<Accessory> accessoires = Arrays.asList(accessoire1,accessoire2);
+		 List<Accessoire> accessoires = Arrays.asList(accessoire1,accessoire2);
 
 		  // Création du véhicule et association des accessoires à ce véhicule
-		 Vehicle vehicule1 = createTestVehciule();
+		 Vehicule vehicule1 = createTestVehciule();
 		 vehicule1.setAccessoires(accessoires);
 		 
 		 // Simulation de la récupération du véhicule par ID depuis le repository
 		 when(vehiculeRepository.findById(1L)).thenReturn(java.util.Optional.of(vehicule1));
 		 
 		 // appel à la méthode à tester
-		 List<Accessory> accessoiresResult = accessoireService.getAccessoiresByVehicule(1L);
+		 List<Accessoire> accessoiresResult = accessoireService.getAccessoiresByVehicule(1L);
 		 // Vérifications des résultats
  		assertNotNull(accessoiresResult);
  		assertEquals(2, accessoiresResult.size());

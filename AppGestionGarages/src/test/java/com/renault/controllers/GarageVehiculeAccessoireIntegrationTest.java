@@ -26,11 +26,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.renault.entities.Accessory;
+import com.renault.entities.Accessoire;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.AccessoireNotFoundException;
 import com.renault.exceptions.VehiculeNotFoundException;
@@ -122,14 +122,14 @@ public class GarageVehiculeAccessoireIntegrationTest {
         return garage;
     }
 
-	private Vehicle createTestVehicule() {
-		return Vehicle.builder().brand("Renault").anneeFabrication(2021).model("Captur")
+	private Vehicule createTestVehicule() {
+		return Vehicule.builder().brand("Renault").anneeFabrication(2021).model("Captur")
 				.typeCarburant(TypeCarburant.ESSENCE).accessoires(new ArrayList<>()).build();
 		
 	}
 
-	private Accessory createTestAccessoire() {
-		return Accessory.builder().name("Caméra").description("Caméra de recul").price(2000)
+	private Accessoire createTestAccessoire() {
+		return Accessoire.builder().name("Caméra").description("Caméra de recul").price(2000)
 				.type("Sécurité").build();
 		
 	}
@@ -164,7 +164,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 		
 		/*************************************************************************************************************************/
 		// 2. Créer un véhicule et l'ajouter au garage
-		Vehicle vehicule = createTestVehicule();
+		Vehicule vehicule = createTestVehicule();
 		String vehiculeJson = mockMvc
 				.perform(post("/api/garages/{garageId}/vehicules", garageId).contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(vehicule)))
@@ -173,10 +173,10 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				// .andDo(print()) // Affiche la réponse complète pour la déboguer
 				.andReturn().getResponse().getContentAsString();
 
-		Vehicle createdVehicule = objectMapper.readValue(vehiculeJson, Vehicle.class);
+		Vehicule createdVehicule = objectMapper.readValue(vehiculeJson, Vehicule.class);
 		Long vehiculeId = createdVehicule.getId();
 		// Vérification dans la base de données
-				Vehicle savedVehicule= vehiculeRepository.findById(vehiculeId).orElseThrow(()-> new VehiculeNotFoundException(vehiculeId));
+				Vehicule savedVehicule= vehiculeRepository.findById(vehiculeId).orElseThrow(()-> new VehiculeNotFoundException(vehiculeId));
 				assertNotNull(savedVehicule);
 				assertEquals("Renault", savedVehicule.getBrand());
 				assertNotNull(savedGarage.getId()); // Vérifier que l'ID est bien généré
@@ -184,7 +184,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 		/*************************************************************************************************************************/
 		
 	     // 3. Créer un accessoire et l'ajouter au véhicule
-		Accessory accessoire = createTestAccessoire();
+		Accessoire accessoire = createTestAccessoire();
 		String accesoireJson = mockMvc
 				.perform(post("/api/vehicules/{vehiculeId}/accessoires", vehiculeId).contentType(MediaType.APPLICATION_JSON)
 						.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(accessoire)))
@@ -194,10 +194,10 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				.andReturn().getResponse().getContentAsString();
 
 		System.out.println("accesoireJson: " + accesoireJson);
-		Accessory accessoireCreated = objectMapper.readValue(accesoireJson, Accessory.class);
+		Accessoire accessoireCreated = objectMapper.readValue(accesoireJson, Accessoire.class);
 		Long accessoireId = accessoireCreated.getId();
 		// Vérification dans la base de données
-		Accessory savedAccessoire= accessoireRepository.findById(accessoireId).orElseThrow(()-> new AccessoireNotFoundException(vehiculeId));
+		Accessoire savedAccessoire= accessoireRepository.findById(accessoireId).orElseThrow(()-> new AccessoireNotFoundException(vehiculeId));
 		assertNotNull(savedAccessoire);
 		assertEquals("Caméra", savedAccessoire.getName());
 		assertNotNull(savedAccessoire.getId()); 
@@ -215,7 +215,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				.andExpect(jsonPath("$.name").value("Caméra 3D")).andExpect(jsonPath("$.price").value(2500.0));
 
 		// Vérification dans la base de données
-				Accessory savedUpdatedAccessoire= accessoireRepository.findById(accessoireId).orElseThrow(()-> new AccessoireNotFoundException(vehiculeId));
+				Accessoire savedUpdatedAccessoire= accessoireRepository.findById(accessoireId).orElseThrow(()-> new AccessoireNotFoundException(vehiculeId));
 				assertNotNull(savedUpdatedAccessoire);
 				assertEquals("Caméra 3D", savedAccessoire.getName());
 				assertNotNull(savedUpdatedAccessoire.getId()); 
@@ -230,7 +230,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				.andExpect(jsonPath("$.brand").value("Bmw")).andExpect(jsonPath("$.model").value("Bmw X3"));
 		
 		// Vérification dans la base de données
-		Vehicle savedUpdatedVehicule= vehiculeRepository.findById(vehiculeId).orElseThrow(()-> new VehiculeNotFoundException(vehiculeId));
+		Vehicule savedUpdatedVehicule= vehiculeRepository.findById(vehiculeId).orElseThrow(()-> new VehiculeNotFoundException(vehiculeId));
 		assertNotNull(savedUpdatedVehicule);
 		assertEquals("Bmw", savedUpdatedVehicule.getBrand());
 		assertNotNull(savedUpdatedVehicule.getId()); 
@@ -247,7 +247,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 		
 		// Vérifier que l'accesoire  n'existe pas
 		    //Apres la suppression 
-		        Optional<Accessory> accessoireApresDelete = accessoireRepository.findById(accessoireId);
+		        Optional<Accessoire> accessoireApresDelete = accessoireRepository.findById(accessoireId);
 				assertEquals(0,accessoireRepository.findAll().size());
 		        assertFalse(accessoireApresDelete.isPresent());
 
@@ -260,7 +260,7 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				
 				// Vérifier que le vehicule  n'existe pas
 			    //Apres la suppression 
-			        Optional<Vehicle> vehiculeApresDelete = vehiculeRepository.findById(vehiculeId);
+			        Optional<Vehicule> vehiculeApresDelete = vehiculeRepository.findById(vehiculeId);
 					assertEquals(0,vehiculeRepository.findAll().size());
 			        assertFalse(vehiculeApresDelete.isPresent());
 

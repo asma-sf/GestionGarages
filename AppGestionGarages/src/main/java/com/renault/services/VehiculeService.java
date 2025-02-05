@@ -2,17 +2,17 @@ package com.renault.services;
 
 import java.util.List;
 
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 
 
 
 public interface VehiculeService {
 	
-	Vehicle addVehiculeToGarage(Long garageId,Vehicle Vehicule);
-	Vehicle updateVehicule(Long vehiculeId ,Vehicle Vehicule);
+	Vehicule addVehiculeToGarage(Long garageId,Vehicule Vehicule);
+	Vehicule updateVehicule(Long vehiculeId ,Vehicule Vehicule);
 	void deleteVehicule(Long vehiculeId);
-	List<Vehicle> getVehiculeByGarage(Long garageId);
-	List<Vehicle> getVehiculeByModel(String model);
+	List<Vehicule> getVehiculeByGarage(Long garageId);
+	List<Vehicule> getVehiculeByModel(String model);
 	
 
 }

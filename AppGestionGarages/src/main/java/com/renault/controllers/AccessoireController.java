@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.renault.entities.Accessory;
+import com.renault.entities.Accessoire;
 import com.renault.services.AccessoireService;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class AccessoireController {
 	
 	
 	@PutMapping("/{accessoireId}")
-	public Accessory updateAccessoire(@PathVariable Long accessoireId,@RequestBody Accessory accessoire) {
+	public Accessoire updateAccessoire(@PathVariable Long accessoireId,@RequestBody Accessoire accessoire) {
 		return accessoireService.updateAccessoire(accessoireId, accessoire);
 		
 	}
@@ -37,7 +37,7 @@ public class AccessoireController {
 		accessoireService.deleteAccesoire(accessoireId);
 	}
 	@GetMapping("/byVehicule/{vehiculeId}")
-	public List<Accessory> getAccessoiresByVehicule(@PathVariable Long vehiculeId){
+	public List<Accessoire> getAccessoiresByVehicule(@PathVariable Long vehiculeId){
 		return accessoireService.getAccessoiresByVehicule(vehiculeId);
 		
 	}

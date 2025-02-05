@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.renault.entities.Garage;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 import com.renault.services.GarageService;
 import com.renault.services.VehiculeService;
 
@@ -60,7 +60,7 @@ public class GarageController {
 		
 	}
 	@PostMapping("/{garageId}/vehicules")
-	public Vehicle addVehiculeToGarage(@PathVariable Long garageId,@RequestBody Vehicle vehicule) {
+	public Vehicule addVehiculeToGarage(@PathVariable Long garageId,@RequestBody Vehicule vehicule) {
 
 		return vehiculeService.addVehiculeToGarage(garageId, vehicule);	
 	}

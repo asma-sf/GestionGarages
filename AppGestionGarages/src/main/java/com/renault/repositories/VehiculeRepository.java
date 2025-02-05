@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.renault.enums.TypeCarburant;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Vehicule;
 
-public interface VehiculeRepository extends JpaRepository<Vehicle, Long>{
+public interface VehiculeRepository extends JpaRepository<Vehicule, Long>{
 
-		List<Vehicle> findByModel(String model);
-		List<Vehicle> findByTypeCarburant(TypeCarburant typeCarburant);
+		List<Vehicule> findByModel(String model);
+		List<Vehicule> findByTypeCarburant(TypeCarburant typeCarburant);
 }

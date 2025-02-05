@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-import com.renault.entities.Accessory;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Accessoire;
+import com.renault.entities.Vehicule;
 import com.renault.exceptions.AccessoireNotFoundException;
 import com.renault.exceptions.VehiculeNotFoundException;
 import com.renault.repositories.AccessoireRepository;
@@ -29,12 +29,12 @@ public class AccessoireServiceImpl implements AccessoireService{
 
 
 	@Override
-	public Accessory addAccessoireToVehicule(Long vehiculeId, Accessory accessoire) {
+	public Accessoire addAccessoireToVehicule(Long vehiculeId, Accessoire accessoire) {
 		log.info("add accessoire to vehicule");
 		if(accessoire== null){
 			throw new IllegalArgumentException("L\'accessoire ne peut pas être null");
 		}
-		Vehicle vehicule = vehiculeRepository.findById(vehiculeId)
+		Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
 				.orElseThrow(() -> new VehiculeNotFoundException(vehiculeId));
 
 		accessoire.setVehicule(vehicule);
@@ -49,9 +49,9 @@ public class AccessoireServiceImpl implements AccessoireService{
 	}
 
 	@Override
-	public Accessory updateAccessoire(Long accesoireId, Accessory accessoireBody) {
+	public Accessoire updateAccessoire(Long accesoireId, Accessoire accessoireBody) {
 		log.info("update accessoire with ID {} ",accesoireId);
-		Accessory accessoire = accessoireRepository.findById(accesoireId)
+		Accessoire accessoire = accessoireRepository.findById(accesoireId)
 				.orElseThrow(() -> new AccessoireNotFoundException(accesoireId));
 		accessoire.setName(accessoireBody.getName());
 		accessoire.setDescription(accessoireBody.getDescription());
@@ -65,7 +65,7 @@ public class AccessoireServiceImpl implements AccessoireService{
 	@Override
 	public void deleteAccesoire(Long accesoireId) {
 		log.info("delete accessoire with ID {} ",accesoireId);
-		Accessory accessoire = accessoireRepository.findById(accesoireId)
+		Accessoire accessoire = accessoireRepository.findById(accesoireId)
 	            .orElseThrow(() -> new AccessoireNotFoundException(accesoireId));
 	            
 	        // Détacher l'accessoire du véhicule s'il y en a un
@@ -80,9 +80,9 @@ public class AccessoireServiceImpl implements AccessoireService{
 	}
 
 	@Override
-	public List<Accessory> getAccessoiresByVehicule(Long vehiculeId) {
+	public List<Accessoire> getAccessoiresByVehicule(Long vehiculeId) {
 		log.info("get accessoires by vehicule with ID{} ",vehiculeId);
-		Vehicle vehicule = vehiculeRepository.findById(vehiculeId)
+		Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
 				.orElseThrow(() ->  new VehiculeNotFoundException(vehiculeId));
 		return vehicule.getAccessoires();
 	}

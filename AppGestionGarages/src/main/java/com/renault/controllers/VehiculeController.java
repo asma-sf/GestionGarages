@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.renault.entities.Accessory;
-import com.renault.entities.Vehicle;
+import com.renault.entities.Accessoire;
+import com.renault.entities.Vehicule;
 import com.renault.services.AccessoireService;
 import com.renault.services.VehiculeService;
 
@@ -34,7 +34,7 @@ public class VehiculeController {
 
 	
 	@PutMapping("/{vehiculeId}")
-	public Vehicle updateVehicule(@PathVariable Long vehiculeId ,@RequestBody Vehicle vehicule) {
+	public Vehicule updateVehicule(@PathVariable Long vehiculeId ,@RequestBody Vehicule vehicule) {
 		return vehiculeService.updateVehicule(vehiculeId, vehicule);
 		
 	}
@@ -43,17 +43,17 @@ public class VehiculeController {
 		vehiculeService.deleteVehicule(vehiculeId);
 	}
 	@GetMapping("/garage/{garageId}")
-	public List<Vehicle> getVehiculeByGarage(@PathVariable Long garageId){
+	public List<Vehicule> getVehiculeByGarage(@PathVariable Long garageId){
 		return vehiculeService.getVehiculeByGarage(garageId);
 		
 	}
 	@GetMapping("/byModel/{model}")
-	public List<Vehicle> getVehiculeByModel(@PathVariable String model){
+	public List<Vehicule> getVehiculeByModel(@PathVariable String model){
 		return vehiculeService.getVehiculeByModel(model);
 	}
 	
 	@PostMapping("/{vehiculeId}/accessoires")
-	public Accessory addAccessoireToVehicule(@PathVariable Long vehiculeId,@RequestBody Accessory accessoire) {
+	public Accessoire addAccessoireToVehicule(@PathVariable Long vehiculeId,@RequestBody Accessoire accessoire) {
 		
 		return accessoireService.addAccessoireToVehicule(vehiculeId, accessoire);
 		
