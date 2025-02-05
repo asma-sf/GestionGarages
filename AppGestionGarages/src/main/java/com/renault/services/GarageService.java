@@ -17,8 +17,8 @@ public interface GarageService {
 	Garage getGarageById(Long garageId);
 	Page<Garage> listGarages(Pageable pageable);
 	
-	List<Garage> searchGaragesByVehiculeType(String vehiculeType);
-	List<Garage> searchGaragesByAccessoire(String accessoireName);
+	List<Garage> searchGaragesByVehicleType(String vehicleType);
+	List<Garage> searchGaragesByAccessory(String accessoryName);
 	
 	
 }

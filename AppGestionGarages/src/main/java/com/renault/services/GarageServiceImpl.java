@@ -17,11 +17,11 @@ import org.springframework.stereotype.Service;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicule;
+import com.renault.entities.Vehicle;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageNotFoundException;
 import com.renault.repositories.GarageRepository;
-import com.renault.repositories.VehiculeRepository;
+import com.renault.repositories.VehicleRepository;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ import jakarta.transaction.Transactional;
 public class GarageServiceImpl implements GarageService {
 
 	private GarageRepository garageRepository;
-	private VehiculeRepository vehiculeRepository;
+	private VehicleRepository vehiculeRepository;
 	
 
 
@@ -161,18 +161,18 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public List<Garage> searchGaragesByVehiculeType(String vehiculeType) {
+	public List<Garage> searchGaragesByVehicleType(String vehiculeType) {
 		log.info("search garages by vehicule type {}: ", vehiculeType);
 		try {
 			TypeCarburant type = TypeCarburant.valueOf(vehiculeType.toUpperCase());
 			
-			List<Vehicule> vehicules = vehiculeRepository.findByTypeCarburant(type);
+			List<Vehicle> vehicules = vehiculeRepository.findByTypeCarburant(type);
 			
 			if (vehicules.isEmpty()) {
 				return Collections.emptyList();
 			}
 			// Suppression des doublons avec un Set
-			Set<Garage> garages = vehicules.stream().map(Vehicule::getGarage).filter(Objects::nonNull) // Évite les NullPointerException																										
+			Set<Garage> garages = vehicules.stream().map(Vehicle::getGarage).filter(Objects::nonNull) // Évite les NullPointerException																										
 					.collect(Collectors.toSet());
 			
 
@@ -186,11 +186,13 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public List<Garage> searchGaragesByAccessoire(String accessoireName) {
-		log.info("search garages by accessoire  {}: ", accessoireName);
-		List<Garage> garages = garageRepository.findGaragesByAccessoire(accessoireName);
+	public List<Garage> searchGaragesByAccessory(String accessoryName) {
+		log.info("search garages by accessoire  {}: ", accessoryName);
+		List<Garage> garages = garageRepository.findGaragesByAccessory(accessoryName);
 
 		return garages;
 	}
+
+
 
 }

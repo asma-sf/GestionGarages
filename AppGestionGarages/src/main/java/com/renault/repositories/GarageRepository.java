@@ -10,10 +10,10 @@ import com.renault.entities.Garage;
 
 public interface GarageRepository  extends JpaRepository<Garage, Long>{
 	@Query("SELECT DISTINCT g FROM Garage g " +
-		       "JOIN g.vehicules v " +
-		       "JOIN v.accessoires a " +
-		       "WHERE a.name = :accessoireName")
-		List<Garage> findGaragesByAccessoire(@Param("accessoireName") String accessoireName);
+		       "JOIN g.vehicles v " +
+		       "JOIN v.accessories a " +
+		       "WHERE a.name = :accessoryName")
+		List<Garage> findGaragesByAccessory(@Param("accessoryName") String accessoryName);
 
 	Garage findByName(String name);
 }

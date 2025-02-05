@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.renault.entities.Garage;
-import com.renault.entities.Vehicule;
+import com.renault.entities.Vehicle;
 import com.renault.services.GarageService;
-import com.renault.services.VehiculeService;
+import com.renault.services.VehicleService;
 
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class GarageController {
 	
 
 	private GarageService garageService;	
-	private VehiculeService vehiculeService;
+	private VehicleService vehicleService;
 	
 
 
@@ -59,19 +59,19 @@ public class GarageController {
 		return garageService.listGarages(pageable);
 		
 	}
-	@PostMapping("/{garageId}/vehicules")
-	public Vehicule addVehiculeToGarage(@PathVariable Long garageId,@RequestBody Vehicule vehicule) {
+	@PostMapping("/{garageId}/vehicles")
+	public Vehicle addVehicleToGarage(@PathVariable Long garageId,@RequestBody Vehicle vehicle) {
 
-		return vehiculeService.addVehiculeToGarage(garageId, vehicule);	
+		return vehicleService.addVehicleToGarage(garageId, vehicle);	
 	}
-	@GetMapping("/byVehiculeType/{vehiculeType}")
-	public List<Garage> searchGaragesByVehiculeType(@PathVariable String vehiculeType) {
-		return garageService.searchGaragesByVehiculeType(vehiculeType);
+	@GetMapping("/byVehicleType/{vehicleType}")
+	public List<Garage> searchGaragesByVehicleType(@PathVariable String vehicleType) {
+		return garageService.searchGaragesByVehicleType(vehicleType);
 		
 	}
-	@GetMapping("/byAccessoire/{accessoireName}")
-	public List<Garage> accessoireName(@PathVariable String accessoireName){
-		return garageService.searchGaragesByAccessoire(accessoireName);
+	@GetMapping("/byAccessory/{accessoryName}")
+	public List<Garage> accessoireName(@PathVariable String accessoryName){
+		return garageService.searchGaragesByAccessory(accessoryName);
 		
 	}
 }

@@ -27,15 +27,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import com.renault.entities.Accessoire;
+import com.renault.entities.Accessory;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
-import com.renault.entities.Vehicule;
+import com.renault.entities.Vehicle;
 import com.renault.enums.TypeCarburant;
-import com.renault.repositories.AccessoireRepository;
+import com.renault.repositories.AccessoryRepository;
 import com.renault.repositories.GarageRepository;
-import com.renault.repositories.VehiculeRepository;
+import com.renault.repositories.VehicleRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -46,10 +46,10 @@ public class GarageServiceTest {
     private GarageRepository garageRepository;
     
     @Mock
-    private VehiculeRepository vehiculeRepository;
+    private VehicleRepository vehicleRepository;
     
     @Mock
-    private AccessoireRepository accessoireRepository;
+    private AccessoryRepository accessoryRepository;
     
    
     
@@ -227,26 +227,12 @@ public class GarageServiceTest {
         .address("Rabat")
         .email("gar-rabat@renault.com")
         .telephone("056677800")
-        /*.garageOpeningTimes(Arrays.asList(
-            GarageOpeningTime.builder()
-                .dayOfWeek(DayOfWeek.MONDAY)
-                .openingTimes(Arrays.asList(
-                    OpeningTime.builder().startTime(LocalTime.of(8, 0)).endTime(LocalTime.of(12, 0)).build(),
-                    OpeningTime.builder().startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(18, 0)).build()))
-                .build()))*/
         .build();
         Garage garage3 =Garage.builder()
                 .name("garage Salé")
                 .address("Salé")
                 .email("gar-sale@renault.com")
                 .telephone("056677800")
-               /* .garageOpeningTimes(Arrays.asList(
-                    GarageOpeningTime.builder()
-                        .dayOfWeek(DayOfWeek.MONDAY)
-                        .openingTimes(Arrays.asList(
-                            OpeningTime.builder().startTime(LocalTime.of(8, 0)).endTime(LocalTime.of(12, 0)).build(),
-                            OpeningTime.builder().startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(18, 0)).build()))
-                        .build()))*/
                 .build();
         when(garageRepository.save(any(Garage.class))).thenReturn(garage);
         when(garageRepository.save(any(Garage.class))).thenReturn(garage2);
@@ -271,7 +257,7 @@ public class GarageServiceTest {
 
     }
         @Test
-    	void testSearchGaragesByAccessoire() {
+    	void testSearchGaragesByAccessory() {
     		
         	Garage garage1 = createTestGarage();
         	Garage garage2 =Garage.builder()
@@ -279,40 +265,26 @@ public class GarageServiceTest {
         	        .address("Rabat")
         	        .email("gar-rabat@renault.com")
         	        .telephone("056677800")
-        	        /*.garageOpeningTimes(Arrays.asList(
-        	            GarageOpeningTime.builder()
-        	                .dayOfWeek(DayOfWeek.MONDAY)
-        	                .openingTimes(Arrays.asList(
-        	                    OpeningTime.builder().startTime(LocalTime.of(8, 0)).endTime(LocalTime.of(12, 0)).build(),
-        	                    OpeningTime.builder().startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(18, 0)).build()))
-        	                .build()))*/
         	        .build();
         	Garage garage3 =Garage.builder()
                     .name("garage Salé")
                     .address("Salé")
                     .email("gar-sale@renault.com")
                     .telephone("056677800")
-                    /*.garageOpeningTimes(Arrays.asList(
-                        GarageOpeningTime.builder()
-                            .dayOfWeek(DayOfWeek.MONDAY)
-                            .openingTimes(Arrays.asList(
-                                OpeningTime.builder().startTime(LocalTime.of(8, 0)).endTime(LocalTime.of(12, 0)).build(),
-                                OpeningTime.builder().startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(18, 0)).build()))
-                            .build()))*/
                     .build();
-        	Accessoire accessoire1 = Accessoire.builder()
+        	Accessory accessory1 = Accessory.builder()
         			.name("Caméra")
         			.description("Caméra de recul")
         			.price(2000)
         			.type("Sécurité")
         			.build();
-        	Accessoire accessoire2 = Accessoire.builder()
+        	Accessory accessory2 = Accessory.builder()
         			.name("GPS")
         			.description("Système de navigation intégré")
         			.price(2500)
         			.type("Sécurité")
         			.build();   	
-        	Accessoire accessoire3 = Accessoire.builder()
+        	Accessory accessory3 = Accessory.builder()
         			.name("Ecran")
         			.description("Ecran tactil")
         			.price(1500)
@@ -320,54 +292,54 @@ public class GarageServiceTest {
         			.build();
 
 
-        	List<Accessoire> accessoires1 = Arrays.asList(accessoire1, accessoire2);// ajouter GPS et camera
-            List<Accessoire> accessoires2 = Arrays.asList(accessoire1); // ajouter que la camera
-            List<Accessoire> accessoires3 = Arrays.asList(accessoire3); // ajouter que l'ecran
-        	Vehicule vehicule1 =Vehicule.builder()
+        	List<Accessory> accessories1 = Arrays.asList(accessory1, accessory2);// ajouter GPS et camera
+            List<Accessory> accessories2 = Arrays.asList(accessory1); // ajouter que la camera
+            List<Accessory> accessories3 = Arrays.asList(accessory3); // ajouter que l'ecran
+        	Vehicle vehicle1 =Vehicle.builder()
         			.brand("Renault")
-        			.anneeFabrication(2021)
+        			.manufacturingYear(2021)
         			.model("Captur")
-        			.accessoires(accessoires1)
+        			.accessories(accessories1)
         			.typeCarburant(TypeCarburant.ESSENCE)
         			.garage(garage1)
         			.build();
-        	Vehicule vehicule2 =Vehicule.builder()
+        	Vehicle vehicle2 =Vehicle.builder()
         			.brand("Renault")
-        			.anneeFabrication(2022)
+        			.manufacturingYear(2022)
         			.model("CLIO")
-        			.accessoires(accessoires2)
+        			.accessories(accessories2)
         			.typeCarburant(TypeCarburant.GASOIL)
         			.garage(garage2)
         			.build();
-        	Vehicule vehicule3 =Vehicule.builder()
+        	Vehicle vehicle3 =Vehicle.builder()
         			.brand("Renault")
-        			.anneeFabrication(2022)
+        			.manufacturingYear(2022)
         			.model("Megan")
-        			.accessoires(accessoires3)
+        			.accessories(accessories3)
         			.typeCarburant(TypeCarburant.GASOIL)
         			.garage(garage3)
         			.build();
         	
-        	List<Vehicule> vehiculesG1 = Arrays.asList(vehicule1,vehicule2);
-        	List<Vehicule> vehiculesG2 = Arrays.asList(vehicule1);
-        	List<Vehicule> vehiculesG3 = Arrays.asList(vehicule3);
-        	garage1.setVehicules(vehiculesG1);
-        	garage2.setVehicules(vehiculesG2);
-        	garage3.setVehicules(vehiculesG3);
+        	List<Vehicle> vehiclesG1 = Arrays.asList(vehicle1,vehicle2);
+        	List<Vehicle> vehiclesG2 = Arrays.asList(vehicle1);
+        	List<Vehicle> vehiclesG3 = Arrays.asList(vehicle3);
+        	garage1.setVehicles(vehiclesG1);
+        	garage2.setVehicles(vehiclesG2);
+        	garage3.setVehicles(vehiclesG3);
         	 // Mock des repositories
             when(garageRepository.save(any(Garage.class))).thenReturn(garage1, garage2, garage3);
-            when(vehiculeRepository.save(any(Vehicule.class))).thenReturn(vehicule1, vehicule2, vehicule3);
-            when(accessoireRepository.save(any(Accessoire.class))).thenReturn(accessoire1, accessoire2, accessoire3);
+            when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle1, vehicle2, vehicle3);
+            when(accessoryRepository.save(any(Accessory.class))).thenReturn(accessory1, accessory2, accessory3);
 
             // on va chercher par l accesoire camera qui se trouve dans les deux vehicules une dans le garage A et la 2eme dans le garage 2
             List<Garage> garagesSearched = Arrays.asList(garage1,garage2);
 
             		
             		// Simuler findGaragesByAccessoire 
-            		when(garageRepository.findGaragesByAccessoire("Caméra")).thenReturn(garagesSearched);
+            		when(garageRepository.findGaragesByAccessory("Caméra")).thenReturn(garagesSearched);
             		
             		// Appel de la méthode à tester
-            		List<Garage> garageResult= garageService.searchGaragesByAccessoire("Caméra");
+            		List<Garage> garageResult= garageService.searchGaragesByAccessory("Caméra");
             		
 
             		//vérifications
@@ -377,7 +349,7 @@ public class GarageServiceTest {
             		assertTrue(garageResult.contains(garage1));
             		assertTrue(garageResult.contains(garage2));
             		// Vérifier que findGaragesByAccessoire a bien été appelé
-            		verify(garageRepository, times(1)).findGaragesByAccessoire("Caméra");
+            		verify(garageRepository, times(1)).findGaragesByAccessory("Caméra");
     	    }
 }
 

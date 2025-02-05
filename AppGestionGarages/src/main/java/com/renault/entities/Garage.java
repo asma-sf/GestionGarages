@@ -37,7 +37,7 @@ public class Garage {
 	private String email;
 	
 	@OneToMany(mappedBy = "garage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Vehicule> vehicules;
+	private List<Vehicle> vehicles;
 
 	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
 	private Map<DayOfWeek, GarageOpeningTime> garageOpeningTimes = new HashMap<>();
