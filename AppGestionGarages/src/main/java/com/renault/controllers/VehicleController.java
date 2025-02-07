@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.renault.dtos.AccessoryDto;
+import com.renault.dtos.VehicleDto;
 import com.renault.entities.Accessory;
 import com.renault.entities.Vehicle;
 import com.renault.services.AccessoryService;
@@ -34,8 +36,8 @@ public class VehicleController {
 
 	
 	@PutMapping("/{vehicleId}")
-	public Vehicle updateVehicle(@PathVariable Long vehicleId ,@RequestBody Vehicle vehicle) {
-		return vehicleService.updateVehicle(vehicleId, vehicle);
+	public VehicleDto updateVehicle(@PathVariable Long vehicleId ,@RequestBody VehicleDto vehicleDto) {
+		return vehicleService.updateVehicle(vehicleId, vehicleDto);
 		
 	}
 	@DeleteMapping("/{vehicleId}")
@@ -43,19 +45,19 @@ public class VehicleController {
 		vehicleService.deleteVehicle(vehicleId);
 	}
 	@GetMapping("/garage/{garageId}")
-	public List<Vehicle> getVehicleByGarage(@PathVariable Long garageId){
+	public List<VehicleDto> getVehicleByGarage(@PathVariable Long garageId){
 		return vehicleService.getVehicleByGarage(garageId);
 		
 	}
 	@GetMapping("/byModel/{model}")
-	public List<Vehicle> getVehicleByModel(@PathVariable String model){
+	public List<VehicleDto> getVehicleByModel(@PathVariable String model){
 		return vehicleService.getVehicleByModel(model);
 	}
 	
 	@PostMapping("/{vehicleId}/accessories")
-	public Accessory addAccessoryToVehicle(@PathVariable Long vehicleId,@RequestBody Accessory accessory) {
+	public AccessoryDto addAccessoryToVehicle(@PathVariable Long vehicleId,@RequestBody AccessoryDto accessoryDto) {
 		
-		return accessoryService.addAccessoryToVehicle(vehicleId, accessory);
+		return accessoryService.addAccessoryToVehicle(vehicleId, accessoryDto);
 		
 	}
 

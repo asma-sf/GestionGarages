@@ -35,6 +35,10 @@ public class GarageOpeningTime {
 	@JsonIgnore
 	private DayOfWeek dayOfWeek; 
 
-	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+	//@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "garageOpeningTime", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OpeningTime> openingTimes = new ArrayList<>();
+	
+	
+	
 }

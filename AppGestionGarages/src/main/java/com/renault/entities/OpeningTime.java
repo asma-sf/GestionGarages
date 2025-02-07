@@ -39,7 +39,8 @@ public class OpeningTime {
     private LocalTime endTime;
     
     @ManyToOne
-    @JoinColumn(name = "group_id")
+   // @JoinColumn(name = "group_id")
     @JsonIgnore
-    private GarageOpeningTime group;
+    @JoinColumn(name = "garage_opening_time_id")
+    private GarageOpeningTime garageOpeningTime;
 }

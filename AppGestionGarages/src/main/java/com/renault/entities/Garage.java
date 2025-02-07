@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,13 +34,15 @@ public class Garage {
 	private Long id;
 	private String name;
 	private String address;
-	private String telephone;
+	private String phone;
 	private String email;
 	
 	@OneToMany(mappedBy = "garage",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Vehicle> vehicles;
 
 	@OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
-	private Map<DayOfWeek, GarageOpeningTime> garageOpeningTimes = new HashMap<>();
+	@MapKey(name = "dayOfWeek")
+	//private Map<DayOfWeek, GarageOpeningTime> garageOpeningTimes = new HashMap<>();
+	private Map<DayOfWeek, GarageOpeningTime> openingTimes = new HashMap<>();
 	
 }

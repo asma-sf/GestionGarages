@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.renault.dtos.GarageDto;
+import com.renault.dtos.VehicleDto;
 import com.renault.entities.Garage;
 import com.renault.entities.Vehicle;
 import com.renault.services.GarageService;
@@ -36,13 +38,13 @@ public class GarageController {
 
 
 	@PostMapping
-	public Garage addGarage(@RequestBody Garage garage) {	
-		return garageService.addGarage(garage);	
+	public GarageDto addGarage(@RequestBody GarageDto garageDto) {	
+		return garageService.addGarage(garageDto);	
 	}
 	
 	@PutMapping("/{garageId}")
-	public Garage updateGarage(@PathVariable Long garageId,@RequestBody Garage garage) {
-		return garageService.updateGarage(garageId, garage);
+	public GarageDto updateGarage(@PathVariable Long garageId,@RequestBody GarageDto garageDto) {
+		return garageService.updateGarage(garageId, garageDto);
 		
 	}
 	@DeleteMapping("/{garageId}")
@@ -51,26 +53,26 @@ public class GarageController {
 	}
 
 	@GetMapping("/{garageId}")
-	public Garage getGarageById(@PathVariable Long garageId) {
+	public GarageDto getGarageById(@PathVariable Long garageId) {
 		return garageService.getGarageById(garageId);	
 	}
 	@GetMapping
-	public Page<Garage> listGarages(Pageable pageable){
+	public Page<GarageDto> listGarages(Pageable pageable){
 		return garageService.listGarages(pageable);
 		
 	}
 	@PostMapping("/{garageId}/vehicles")
-	public Vehicle addVehicleToGarage(@PathVariable Long garageId,@RequestBody Vehicle vehicle) {
+	public VehicleDto addVehicleToGarage(@PathVariable Long garageId,@RequestBody VehicleDto vehicle) {
 
 		return vehicleService.addVehicleToGarage(garageId, vehicle);	
 	}
 	@GetMapping("/byVehicleType/{vehicleType}")
-	public List<Garage> searchGaragesByVehicleType(@PathVariable String vehicleType) {
+	public List<GarageDto> searchGaragesByVehicleType(@PathVariable String vehicleType) {
 		return garageService.searchGaragesByVehicleType(vehicleType);
 		
 	}
 	@GetMapping("/byAccessory/{accessoryName}")
-	public List<Garage> accessoireName(@PathVariable String accessoryName){
+	public List<GarageDto> accessoireName(@PathVariable String accessoryName){
 		return garageService.searchGaragesByAccessory(accessoryName);
 		
 	}

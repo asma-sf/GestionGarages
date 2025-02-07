@@ -1,8 +1,10 @@
+
 package com.renault.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,6 +28,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.renault.dtos.AccessoryDto;
+import com.renault.dtos.GarageDto;
+import com.renault.dtos.OpeningTimeDto;
+import com.renault.dtos.VehicleDto;
 import com.renault.entities.Accessory;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
@@ -40,7 +46,9 @@ import com.renault.repositories.VehicleRepository;
 import jakarta.transaction.Transactional;
 
 @Transactional
+
 @SpringBootTest
+
 @AutoConfigureMockMvc
 public class GarageVehiculeAccessoireIntegrationTest {
 
@@ -59,85 +67,53 @@ public class GarageVehiculeAccessoireIntegrationTest {
 	@Autowired
 	private AccessoryRepository accessoryRepository;
 
-	private Garage createTestGarage() {
-        // Création du garage
-        Garage garage = Garage.builder()
-        		.name("garage Casablanca")
-                .address("Casablanca")
-                .email("gar-casa@renault.com")
-                .telephone("0566778899")
-            .build();
+	private GarageDto createTestGarageDto() {
+		// Création du garage
+		GarageDto garageDto = GarageDto.builder().name("garage Casablanca").address("Casablanca")
+				.email("gar-casa@renault.com").phone("0566778899").build();
 
-        // Création des créneaux horaires
-        List<OpeningTime> mondayTimes = Arrays.asList(
-            OpeningTime.builder()
-                .dayOfWeek(DayOfWeek.MONDAY)
-                .startTime(LocalTime.of(8, 0))
-                .endTime(LocalTime.of(12, 0))
-                .build(),
-            OpeningTime.builder()
-                .dayOfWeek(DayOfWeek.MONDAY)
-                .startTime(LocalTime.of(14, 0))
-                .endTime(LocalTime.of(18, 0))
-                .build()
-        );
+		// Création des créneaux horaires
+		List<OpeningTimeDto> mondayTimes = Arrays.asList(
+				OpeningTimeDto.builder().dayOfWeek(DayOfWeek.MONDAY).startTime(LocalTime.of(8, 0))
+						.endTime(LocalTime.of(12, 0)).build(),
+				OpeningTimeDto.builder().dayOfWeek(DayOfWeek.MONDAY).startTime(LocalTime.of(14, 0))
+						.endTime(LocalTime.of(18, 0)).build());
 
-        List<OpeningTime> tuesdayTimes = Arrays.asList(
-            OpeningTime.builder()
-                .dayOfWeek(DayOfWeek.TUESDAY)
-                .startTime(LocalTime.of(8, 0))
-                .endTime(LocalTime.of(12, 0))
-                .build(),
-            OpeningTime.builder()
-                .dayOfWeek(DayOfWeek.TUESDAY)
-                .startTime(LocalTime.of(15, 0))
-                .endTime(LocalTime.of(18, 0))
-                .build()
-        );
+		List<OpeningTimeDto> tuesdayTimes = Arrays.asList(
+				OpeningTimeDto.builder().dayOfWeek(DayOfWeek.TUESDAY).startTime(LocalTime.of(8, 0))
+						.endTime(LocalTime.of(12, 0)).build(),
+				OpeningTimeDto.builder().dayOfWeek(DayOfWeek.TUESDAY).startTime(LocalTime.of(15, 0))
+						.endTime(LocalTime.of(18, 0)).build());
 
+		// Création des groupes d'horaires
+		Map<DayOfWeek, List<OpeningTimeDto>> garageOpeningTimeDtos = new HashMap<>();
 
-        // Création des groupes d'horaires
-        Map<DayOfWeek, GarageOpeningTime> openingTimes = new HashMap<>();
-        
-        openingTimes.put(DayOfWeek.MONDAY, GarageOpeningTime.builder()
-            .dayOfWeek(DayOfWeek.MONDAY)
-            .openingTimes(mondayTimes)
-            .build());
-        
-        openingTimes.put(DayOfWeek.TUESDAY, GarageOpeningTime.builder()
-            .dayOfWeek(DayOfWeek.TUESDAY)
-            .openingTimes(tuesdayTimes)
-            .build());
+		garageOpeningTimeDtos.put(DayOfWeek.MONDAY, mondayTimes);
+		garageOpeningTimeDtos.put(DayOfWeek.TUESDAY, tuesdayTimes);
 
-        // Lier les groupes au garage
-        garage.setGarageOpeningTimes(openingTimes);
+		// Lier les groupes au garage
+		garageDto = GarageDto.builder().name("garage Casablanca").address("Casablanca").email("gar-casa@renault.com")
+				.phone("0566778899").openingTimes(garageOpeningTimeDtos).build();
 
-        // Définir le groupe pour chaque créneau horaire
-        openingTimes.values().forEach(groupTime -> 
-            groupTime.getOpeningTimes().forEach(openingTime -> 
-                openingTime.setGroup(groupTime)
-            )
-        );
-
-        return garage;
-    }
-
-	private Vehicle createTestVehicule() {
-		return Vehicle.builder().brand("Renault").manufacturingYear(2021).model("Captur")
-				.typeCarburant(TypeCarburant.ESSENCE).accessories(new ArrayList<>()).build();
-		
+		return garageDto;
 	}
 
-	private Accessory createTestAccessoire() {
-		return Accessory.builder().name("Caméra").description("Caméra de recul").price(2000)
-				.type("Sécurité").build();
-		
+	private VehicleDto createTestVehicleDto() {
+		return VehicleDto.builder().brand("Renault").manufacturingYear(2021).model("Captur")
+				.typeCarburant(TypeCarburant.ESSENCE).accessories(new ArrayList<>()).build();
+
+	}
+
+	private AccessoryDto createTestAccessoryDto() {
+		return AccessoryDto.builder().name("Caméra").description("Caméra de recul").price(2000).type("Sécurité")
+				.build();
+
 	}
 
 	@Test
 	public void LifecycleOperationsOnGarageVehiculeAndAccessoire() throws Exception {
 		// 1. Créer et tester le garage
-		Garage garage = createTestGarage();
+		GarageDto garage = createTestGarageDto();
 
 		String garageJson = mockMvc
 				.perform(post("/api/garages").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
@@ -145,138 +121,142 @@ public class GarageVehiculeAccessoireIntegrationTest {
 				.andExpect(status().isOk()).andExpect(jsonPath("$.name").value("garage Casablanca"))
 				.andExpect(jsonPath("$.address").value("Casablanca"))
 				.andExpect(jsonPath("$.email").value("gar-casa@renault.com"))
-				.andExpect(jsonPath("$.telephone").value("0566778899"))
-				.andDo(print())
-				.andExpect(jsonPath("$.garageOpeningTimes.MONDAY").exists())
-				.andExpect(jsonPath("$.garageOpeningTimes.MONDAY.openingTimes[0].startTime").value("08:00:00"))
-				.andExpect(jsonPath("$.garageOpeningTimes.MONDAY.openingTimes[0].endTime").value("12:00:00"))
-				.andReturn().getResponse().getContentAsString();
+				.andExpect(jsonPath("$.phone").value("0566778899")).andDo(print())
+				.andExpect(jsonPath("$.openingTimes.MONDAY").exists())
+				.andExpect(jsonPath("$.openingTimes.MONDAY[0].startTime").value("08:00:00"))
+				.andExpect(jsonPath("$.openingTimes.MONDAY[0].endTime").value("12:00:00"))
+				.andExpect(jsonPath("$.openingTimes.MONDAY[1].startTime").value("14:00:00"))
+				.andExpect(jsonPath("$.openingTimes.MONDAY[1].endTime").value("18:00:00")).andReturn().getResponse()
+				.getContentAsString();
 
+		GarageDto createdGarage = objectMapper.readValue(garageJson, GarageDto.class);
+		Long garageId = createdGarage.id();
 
-		Garage createdGarage = objectMapper.readValue(garageJson, Garage.class);
-		Long garageId = createdGarage.getId();
-	
 		// Vérification dans la base de données
-		Garage savedGarage = garageRepository.findByName("garage Casablanca");
-		assertNotNull(savedGarage);
+		Optional<Garage> savedGarageOpt = garageRepository.findById(garageId);
+		assertTrue(savedGarageOpt.isPresent(), "Le garage doit être présent dans la base de données");
+		Garage savedGarage = savedGarageOpt.get();
+		assertEquals("garage Casablanca", savedGarage.getName());
 		assertEquals("Casablanca", savedGarage.getAddress());
-		assertNotNull(savedGarage.getId()); // Vérifier que l'ID est bien généré
-		
+
 		/*************************************************************************************************************************/
 		// 2. Créer un véhicule et l'ajouter au garage
-		Vehicle vehicule = createTestVehicule();
-		String vehiculeJson = mockMvc
+		VehicleDto vehicleDto = createTestVehicleDto();
+		String vehicleJson = mockMvc
 				.perform(post("/api/garages/{garageId}/vehicles", garageId).contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(vehicule)))
+						.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(vehicleDto)))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.brand").value("Renault"))
 				.andExpect(jsonPath("$.model").value("Captur")).andExpect(jsonPath("$.manufacturingYear").value("2021"))
-				// .andDo(print()) // Affiche la réponse complète pour la déboguer
 				.andReturn().getResponse().getContentAsString();
 
-		Vehicle createdVehicule = objectMapper.readValue(vehiculeJson, Vehicle.class);
-		Long vehicleId = createdVehicule.getId();
+		VehicleDto createdVehicule = objectMapper.readValue(vehicleJson, VehicleDto.class);
+		Long vehicleId = createdVehicule.id();
+
 		// Vérification dans la base de données
-				Vehicle savedVehicule= vehicleRepository.findById(vehicleId).orElseThrow(()-> new VehicleNotFoundException(vehicleId));
-				assertNotNull(savedVehicule);
-				assertEquals("Renault", savedVehicule.getBrand());
-				assertNotNull(savedGarage.getId()); // Vérifier que l'ID est bien généré
-		
+		Vehicle savedVehicle = vehicleRepository.findById(vehicleId)
+				.orElseThrow(() -> new VehicleNotFoundException(vehicleId));
+		assertNotNull(savedVehicle);
+		assertEquals("Renault", savedVehicle.getBrand());
+		assertNotNull(savedVehicle.getId()); // Vérifier que l'ID est bien généré
+
 		/*************************************************************************************************************************/
-		
-	     // 3. Créer un accessoire et l'ajouter au véhicule
-		Accessory accessory = createTestAccessoire();
+		// 3. Créer un accessoire et l'ajouter au véhicule
+		AccessoryDto accessory = createTestAccessoryDto();
 		String accessoryJson = mockMvc
-				.perform(post("/api/vehicles/{vehicleId}/accessories", vehicleId).contentType(MediaType.APPLICATION_JSON)
-						.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(accessory)))
+				.perform(
+						post("/api/vehicles/{vehicleId}/accessories", vehicleId).contentType(MediaType.APPLICATION_JSON)
+								.accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(accessory)))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Caméra"))
 				.andExpect(jsonPath("$.price").value(2000.0)).andExpect(jsonPath("$.type").value("Sécurité"))
 				.andDo(print()) // Affiche la réponse complète pour la déboguer
 				.andReturn().getResponse().getContentAsString();
 
-		System.out.println("accesoireJson: " + accessoryJson);
-		Accessory accessoryCreated = objectMapper.readValue(accessoryJson, Accessory.class);
-		Long accessoryId = accessoryCreated.getId();
+		AccessoryDto accessoryCreated = objectMapper.readValue(accessoryJson, AccessoryDto.class);
+		Long accessoryId = accessoryCreated.id();
 		// Vérification dans la base de données
-		Accessory savedAccessory= accessoryRepository.findById(accessoryId).orElseThrow(()-> new AccessoryNotFoundException(vehicleId));
+		Accessory savedAccessory = accessoryRepository.findById(accessoryId)
+				.orElseThrow(() -> new AccessoryNotFoundException(accessoryId));
 		assertNotNull(savedAccessory);
 		assertEquals("Caméra", savedAccessory.getName());
-		assertNotNull(savedAccessory.getId()); 
-		
+		assertNotNull(savedAccessory.getId());
+
 		/*************************************************************************************************************************/
-		
 		// 4. Modifier l'accessoire
-		accessoryCreated.setName("Caméra 3D");
-		accessoryCreated.setPrice(2500);
+		AccessoryDto accessoryDtoUpdated = AccessoryDto.builder().name("Caméra 3D").description("Caméra de recul")
+				.price(2500).type("Sécurité").build();
+
 		// Convertir l'objet en JSON pour l'envoyer dans le corps de la requête
-		String updatedAccessoryJson = objectMapper.writeValueAsString(accessoryCreated);
+		String updatedAccessoryJson = objectMapper.writeValueAsString(accessoryDtoUpdated);
 		mockMvc.perform(put("/api/accessories/{accessoryId}", accessoryId).contentType(MediaType.APPLICATION_JSON)
-	            .accept(MediaType.APPLICATION_JSON).content(updatedAccessoryJson)) // Body avec les nouvelles données
+				.accept(MediaType.APPLICATION_JSON).content(updatedAccessoryJson)) // Body avec les nouvelles données
 				.andExpect(status().isOk()) // Vérifie que la réponse est 200 OK
 				.andExpect(jsonPath("$.name").value("Caméra 3D")).andExpect(jsonPath("$.price").value(2500.0));
 
 		// Vérification dans la base de données
-				Accessory savedUpdatedAccessory= accessoryRepository.findById(accessoryId).orElseThrow(()-> new AccessoryNotFoundException(vehicleId));
-				assertNotNull(savedUpdatedAccessory);
-				assertEquals("Caméra 3D", savedAccessory.getName());
-				assertNotNull(savedUpdatedAccessory.getId()); 
+		Accessory savedUpdatedAccessory = accessoryRepository.findById(accessoryId)
+				.orElseThrow(() -> new AccessoryNotFoundException(accessoryId));
+		assertNotNull(savedUpdatedAccessory);
+		assertEquals("Caméra 3D", savedAccessory.getName());
+		assertNotNull(savedUpdatedAccessory.getId());
 		/*************************************************************************************************************************/
 		// 5. Modifier le véhicule
-		createdVehicule.setBrand("Bmw");
-		createdVehicule.setModel("Bmw X3");
-		String updatedVehicileJson = objectMapper.writeValueAsString(createdVehicule);
+		VehicleDto vehicleDtoUpdated = VehicleDto.builder().brand("Bmw").manufacturingYear(2021).model("Bmw X3")
+				.typeCarburant(TypeCarburant.ESSENCE).accessories(new ArrayList<>()).build();
+
+		String updatedVehicileJson = objectMapper.writeValueAsString(vehicleDtoUpdated);
 		mockMvc.perform(put("/api/vehicles/{vehicleId}", vehicleId).contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON).content(updatedVehicileJson)) // Body avec les nouvelles données
 				.andExpect(status().isOk()) // Vérifie que la réponse est 200 OK
 				.andExpect(jsonPath("$.brand").value("Bmw")).andExpect(jsonPath("$.model").value("Bmw X3"));
-		
+
 		// Vérification dans la base de données
-		Vehicle savedUpdatedVehicule= vehicleRepository.findById(vehicleId).orElseThrow(()-> new VehicleNotFoundException(vehicleId));
+		Vehicle savedUpdatedVehicule = vehicleRepository.findById(vehicleId)
+				.orElseThrow(() -> new VehicleNotFoundException(vehicleId));
 		assertNotNull(savedUpdatedVehicule);
 		assertEquals("Bmw", savedUpdatedVehicule.getBrand());
-		assertNotNull(savedUpdatedVehicule.getId()); 
+		assertNotNull(savedUpdatedVehicule.getId());
 		/*************************************************************************************************************************/
 		// 6. Supprimer l'accessoire
 		
-		//Avant la suppression :");
-		assertEquals(1,accessoryRepository.findAll().size());
+				//Avant la suppression 
+				assertEquals(1,accessoryRepository.findAll().size());
 
-		mockMvc.perform(delete("/api/accessories/{accessoireId}", accessoryId)
-		        .accept(MediaType.APPLICATION_JSON))
-		        .andExpect(status().isOk());
-		       // .andDo(print()); // Pour voir la réponse complète
-		
-		// Vérifier que l'accesoire  n'existe pas
-		    //Apres la suppression 
-		        Optional<Accessory> accessoireApresDelete = accessoryRepository.findById(accessoryId);
-				assertEquals(0,accessoryRepository.findAll().size());
-		        assertFalse(accessoireApresDelete.isPresent());
-
-		  /*************************************************************************************************************************/
-		     // 7. Supprimer le véhicule
-		      //Avant la suppression :");
-				assertEquals(1,vehicleRepository.findAll().size());
-				mockMvc.perform(delete("/api/vehicles/{vehicleId}", vehicleId).accept(MediaType.APPLICATION_JSON))
-						.andExpect(status().isOk());
+				mockMvc.perform(delete("/api/accessories/{accessoireId}", accessoryId)
+				        .accept(MediaType.APPLICATION_JSON))
+				        .andExpect(status().isOk());
+				       // .andDo(print());
 				
-				// Vérifier que le vehicule  n'existe pas
-			    //Apres la suppression 
-			        Optional<Vehicle> vehiculeApresDelete = vehicleRepository.findById(vehicleId);
-					assertEquals(0,vehicleRepository.findAll().size());
-			        assertFalse(vehiculeApresDelete.isPresent());
+				// Vérifier que l'accesoire  n'existe pas
+				    //Apres la suppression 
+				        Optional<Accessory> accessoireApresDelete = accessoryRepository.findById(accessoryId);
+						assertEquals(0,accessoryRepository.findAll().size());
+				        assertFalse(accessoireApresDelete.isPresent());
 
-		/*************************************************************************************************************************/
-				// 8. Supprimer le garage
-			        //Avant la suppression :");
-						assertEquals(1,garageRepository.findAll().size());
-			        
-				mockMvc.perform(delete("/api/garages/{garageId}", garageId).accept(MediaType.APPLICATION_JSON))
-						.andExpect(status().isOk());
+				  /*************************************************************************************************************************/
+				        // 7. Supprimer le véhicule
+					      //Avant la suppression :
+							assertEquals(1,vehicleRepository.findAll().size());
+							mockMvc.perform(delete("/api/vehicles/{vehicleId}", vehicleId).accept(MediaType.APPLICATION_JSON))
+									.andExpect(status().isOk());
+							
+							// Vérifier que le vehicule  n'existe pas
+						    //Apres la suppression 
+						        Optional<Vehicle> vehiculeApresDelete = vehicleRepository.findById(vehicleId);
+								assertEquals(0,vehicleRepository.findAll().size());
+						        assertFalse(vehiculeApresDelete.isPresent());
 
-				// Vérifier que le garage  n'existe pas
-			    //Apres la suppression 
-			        Optional<Garage> garageApresDelete = garageRepository.findById(garageId);
-					assertEquals(0,garageRepository.findAll().size());
-			        assertFalse(garageApresDelete.isPresent());                    
+					/*************************************************************************************************************************/
+							// 8. Supprimer le garage
+						        //Avant la suppression :"
+									assertEquals(1,garageRepository.findAll().size());
+						        
+							mockMvc.perform(delete("/api/garages/{garageId}", garageId).accept(MediaType.APPLICATION_JSON))
+									.andExpect(status().isOk());
+
+							// Vérifier que le garage  n'existe pas
+						    //Apres la suppression 
+						        Optional<Garage> garageApresDelete = garageRepository.findById(garageId);
+								assertEquals(0,garageRepository.findAll().size());
+						        assertFalse(garageApresDelete.isPresent());    
 	}
-
 }

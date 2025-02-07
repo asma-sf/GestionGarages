@@ -5,20 +5,21 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.renault.dtos.GarageDto;
 import com.renault.entities.Garage;
 
 
 
 public interface GarageService {
 
-	Garage addGarage(Garage Garage);
-	Garage updateGarage(Long garageId,Garage Garage);
+	GarageDto addGarage(GarageDto garageDto);
+	GarageDto updateGarage(Long garageId,GarageDto garageDto);
 	void deleteGarage(Long garageId);
-	Garage getGarageById(Long garageId);
-	Page<Garage> listGarages(Pageable pageable);
+	GarageDto getGarageById(Long garageId);
+	Page<GarageDto> listGarages(Pageable pageable);
 	
-	List<Garage> searchGaragesByVehicleType(String vehicleType);
-	List<Garage> searchGaragesByAccessory(String accessoryName);
+	List<GarageDto> searchGaragesByVehicleType(String vehicleType);
+	List<GarageDto> searchGaragesByAccessory(String accessoryName);
 	
 	
 }

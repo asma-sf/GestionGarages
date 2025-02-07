@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.renault.dtos.AccessoryDto;
 import com.renault.entities.Accessory;
 import com.renault.entities.Vehicle;
 import com.renault.exceptions.AccessoryNotFoundException;
 import com.renault.exceptions.VehicleNotFoundException;
+import com.renault.mappers.AccessoryMapper;
 import com.renault.repositories.AccessoryRepository;
 import com.renault.repositories.VehicleRepository;
 
@@ -23,43 +25,46 @@ public class AccessoryServiceImpl implements AccessoryService{
 	
 	private AccessoryRepository accessoireRepository;
 	private VehicleRepository vehiculeRepository;
+	private AccessoryMapper accessoryMapper;
 	
 
 
 
 
 	@Override
-	public Accessory addAccessoryToVehicle(Long vehicleId, Accessory accessory) {
+	public AccessoryDto addAccessoryToVehicle(Long vehicleId, AccessoryDto accessoryDto) {
 		log.info("add accessoire to vehicule");
-		if(accessory== null){
+		if(accessoryDto== null){
 			throw new IllegalArgumentException("L\'accessoire ne peut pas être null");
 		}
-		Vehicle vehicule = vehiculeRepository.findById(vehicleId)
+		Vehicle vehicle = vehiculeRepository.findById(vehicleId)
 				.orElseThrow(() -> new VehicleNotFoundException(vehicleId));
 
-		accessory.setVehicule(vehicule);
-		if (vehicule.getAccessories()== null) {
-			vehicule.setAccessories(new ArrayList<>());
+		Accessory accessoryEntity = accessoryMapper.toAccessoryEntity(accessoryDto);
+		accessoryEntity.setVehicule(vehicle);
+		if (vehicle.getAccessories()== null) {
+			vehicle.setAccessories(new ArrayList<>());
 			
 		}
-		vehicule.getAccessories().add(accessory); // ajouter l'accessoire au vehicule
-		accessoireRepository.save(accessory); // sauvegrader l'accessoire
+		vehicle.getAccessories().add(accessoryEntity); // ajouter l'accessoire au vehicule
+		accessoireRepository.save(accessoryEntity); // sauvegrader l'accessoire
 
-		return accessory;
+		return accessoryMapper.toAccessoryDto(accessoryEntity);
 	}
 
 	@Override
-	public Accessory updateAccessory(Long accesoireId, Accessory accessoryBody) {
+	public AccessoryDto updateAccessory(Long accesoireId, AccessoryDto accessoryBody) {
 		log.info("update accessoire with ID {} ",accesoireId);
-		Accessory accessoire = accessoireRepository.findById(accesoireId)
+		Accessory accessory = accessoireRepository.findById(accesoireId)
 				.orElseThrow(() -> new AccessoryNotFoundException(accesoireId));
-		accessoire.setName(accessoryBody.getName());
-		accessoire.setDescription(accessoryBody.getDescription());
-		accessoire.setPrice(accessoryBody.getPrice());
-		accessoire.setType(accessoryBody.getType());
+		Accessory AccessoryEntityBody=accessoryMapper.toAccessoryEntity(accessoryBody);
+		accessory.setName(AccessoryEntityBody.getName());
+		accessory.setDescription(AccessoryEntityBody.getDescription());
+		accessory.setPrice(AccessoryEntityBody.getPrice());
+		accessory.setType(AccessoryEntityBody.getType());
 
-		accessoireRepository.save(accessoire);
-		return accessoire;
+		accessoireRepository.save(accessory);
+		return accessoryMapper.toAccessoryDto(accessory);
 	}
 
 	@Override
@@ -80,11 +85,11 @@ public class AccessoryServiceImpl implements AccessoryService{
 	}
 
 	@Override
-	public List<Accessory> getAccessoriesByVehicule(Long vehicleId) {
+	public List<AccessoryDto> getAccessoriesByVehicule(Long vehicleId) {
 		log.info("get accessoires by vehicule with ID{} ",vehicleId);
 		Vehicle vehicule = vehiculeRepository.findById(vehicleId)
 				.orElseThrow(() ->  new VehicleNotFoundException(vehicleId));
-		return vehicule.getAccessories();
+		return vehicule.getAccessories().stream().map(accessory -> accessoryMapper.toAccessoryDto(accessory)).toList();
 	}
 
 }

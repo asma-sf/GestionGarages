@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.renault.dtos.VehicleDto;
 import com.renault.entities.Accessory;
 import com.renault.entities.Garage;
 import com.renault.entities.Vehicle;
@@ -11,6 +12,7 @@ import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageLimitVehiculeException;
 import com.renault.exceptions.GarageNotFoundException;
 import com.renault.exceptions.VehicleNotFoundException;
+import com.renault.mappers.VehicleMapper;
 import com.renault.repositories.GarageRepository;
 import com.renault.repositories.VehicleRepository;
 
@@ -27,14 +29,15 @@ public class VehicleServiceImpl implements VehicleService {
 
 	private VehicleRepository vehicleRepository;
 	private GarageRepository garageRepository;
+	private VehicleMapper vehicleMapper;
 
 
 	
 
 	@Override
-	public Vehicle addVehicleToGarage(Long garageId, Vehicle vehicle) {
+	public VehicleDto addVehicleToGarage(Long garageId, VehicleDto vehicleDto) {
 
-		if(vehicle ==null) {
+		if(vehicleDto ==null) {
 			throw new IllegalArgumentException("Le vehicule ne peut pas être null");
 		}
 		// Récupérer le garage
@@ -48,6 +51,7 @@ public class VehicleServiceImpl implements VehicleService {
 		if (garage.getVehicles().size() >= MAX_VEHICLES) {
 			throw new GarageLimitVehiculeException(MAX_VEHICLES);
 		}
+		Vehicle vehicle =vehicleMapper.toVehicleEntity(vehicleDto);
 		// Convertir le type du véhicule en majuscules
 		if (vehicle.getTypeCarburant() != null) {
 			vehicle.setTypeCarburant(TypeCarburant.valueOf(vehicle.getTypeCarburant().name().toUpperCase()));
@@ -66,11 +70,11 @@ public class VehicleServiceImpl implements VehicleService {
 
 		//garageRepository.save(garage);
 
-		return savedVehicule;
+		return vehicleMapper.toVehicleDto(savedVehicule);
 	}
 
 
-	public Vehicle updateVehicle(Long vehiculeId, Vehicle vehicle) {
+	public VehicleDto updateVehicle(Long vehiculeId, VehicleDto vehicleDto) {
 		log.info("Update vehicule with ID {}", vehiculeId);
 
 		// Récupérer le véhicule existant ou lever une exception s'il n'existe pas
@@ -79,8 +83,9 @@ public class VehicleServiceImpl implements VehicleService {
 
 		// Mise à jour des champs seulement si les nouvelles valeurs ne sont pas nulles
 
+		Vehicle vehicle = vehicleMapper.toVehicleEntity(vehicleDto);
+		
 		vehicleToUpdate.setManufacturingYear((vehicle.getManufacturingYear()));
-
 		if (vehicle.getBrand() != null) {
 			vehicleToUpdate.setBrand(vehicle.getBrand());
 		}
@@ -103,7 +108,7 @@ public class VehicleServiceImpl implements VehicleService {
 		// Sauvegarde de l'entité mise à jour
 		vehicleRepository.save(vehicleToUpdate);
 
-		return vehicleToUpdate;
+		return vehicleMapper.toVehicleDto(vehicleToUpdate);
 	}
 
 	@Override
@@ -119,21 +124,21 @@ public class VehicleServiceImpl implements VehicleService {
 	}
 
 	@Override
-	public List<Vehicle> getVehicleByGarage(Long garageId) {
+	public List<VehicleDto> getVehicleByGarage(Long garageId) {
 		log.info("get vehicles for garage with ID {}", garageId);
 		Garage garage = garageRepository.findById(garageId).orElseThrow(() -> new GarageNotFoundException(garageId));
 
 		List<Vehicle> vehicles = garage.getVehicles();
 
-		return vehicles;
+		return vehicles.stream().map(vehicule -> vehicleMapper.toVehicleDto(vehicule)).toList();
 	}
 
 	@Override
-	public List<Vehicle> getVehicleByModel(String model) {
+	public List<VehicleDto> getVehicleByModel(String model) {
 		log.info("get vehicles by model {}", model);
-		List<Vehicle> vehicules = vehicleRepository.findByModel(model);
+		List<Vehicle> vehicles = vehicleRepository.findByModel(model);
 
-		return vehicules;
+		return vehicles.stream().map(vehicule -> vehicleMapper.toVehicleDto(vehicule)).toList();
 	}
 
 }

@@ -14,12 +14,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.renault.dtos.GarageDto;
 import com.renault.entities.Garage;
 import com.renault.entities.GarageOpeningTime;
 import com.renault.entities.OpeningTime;
 import com.renault.entities.Vehicle;
 import com.renault.enums.TypeCarburant;
 import com.renault.exceptions.GarageNotFoundException;
+import com.renault.mappers.GarageMapper;
+import com.renault.repositories.GarageOpeningTimeRepository;
 import com.renault.repositories.GarageRepository;
 import com.renault.repositories.VehicleRepository;
 
@@ -38,16 +41,18 @@ public class GarageServiceImpl implements GarageService {
 
 	private GarageRepository garageRepository;
 	private VehicleRepository vehiculeRepository;
-	
+	private GarageMapper garageMapper;
+	private GarageOpeningTimeRepository garageOpeningTimeRepository;
 
 
 	@Override
-	public Garage addGarage(Garage garage) {
-	    log.info("Adding new garage: {}", garage.getName());
+	public GarageDto addGarage(GarageDto garageBodyDto) {
+	    log.info("Adding new garage: {}", garageBodyDto.name());
 
-	    if (garage.getGarageOpeningTimes() != null) {
+	    Garage garage =garageMapper.toGarage(garageBodyDto);
+	    if (garage.getOpeningTimes() != null) {
 	        // Parcourir chaque GarageOpeningTime
-	        for (Map.Entry<DayOfWeek, GarageOpeningTime> entry : garage.getGarageOpeningTimes().entrySet()) {
+	        for (Map.Entry<DayOfWeek, GarageOpeningTime> entry : garage.getOpeningTimes().entrySet()) {
 	            GarageOpeningTime garageOpeningTime = entry.getValue();
 	            // Associer le garage à chaque GarageOpeningTime
 	            garageOpeningTime.setDayOfWeek(entry.getKey());
@@ -56,81 +61,107 @@ public class GarageServiceImpl implements GarageService {
 	            if (garageOpeningTime.getOpeningTimes() != null) {
 	                for (OpeningTime openingTime : garageOpeningTime.getOpeningTimes()) {
 	                    // Associer le groupe d'ouverture au créneau horaire
-	                    openingTime.setGroup(garageOpeningTime);
+	                    openingTime.setGarageOpeningTime(garageOpeningTime);
 	                    openingTime.setDayOfWeek(entry.getKey());
 	                }
 	            }
 	        }
 	    }
-
-	    return garageRepository.save(garage);
+	    garageRepository.save(garage);
+	    return garageMapper.toGarageDto(garage);
 	}
 
 
 	@Override
-	public Garage updateGarage(Long garageId, Garage garageBody) {
+	public GarageDto updateGarage(Long garageId, GarageDto garageDto) {
 	    log.info("Mise à jour du garage avec l'ID {}", garageId);
 
 	    // Récupérer le garage existant
 	    Garage garageToUpdate = garageRepository.findById(garageId)
 	            .orElseThrow(() -> new GarageNotFoundException(garageId));
 
+	    Garage garageBody = garageMapper.toGarage(garageDto);
 	    // Mettre à jour les informations de base du garage
 	    garageToUpdate.setName(garageBody.getName());
 	    garageToUpdate.setEmail(garageBody.getEmail());
 	    garageToUpdate.setAddress(garageBody.getAddress());
-	    garageToUpdate.setTelephone(garageBody.getTelephone());
+	    garageToUpdate.setPhone(garageBody.getPhone());
 
 	    // Mettre à jour les horaires d'ouverture
 	    mettreAJourHorairesOuverture(garageToUpdate, garageBody);
 	    
 	    garageRepository.save(garageToUpdate);
-	    return garageToUpdate;
+	    return garageMapper.toGarageDto(garageToUpdate);
 	}
 
 	private void mettreAJourHorairesOuverture(Garage garageToUpdate, Garage garageBody) {
-	    // Ignorer si aucun horaire n'est fourni
-	    if (garageBody.getGarageOpeningTimes() == null) {
+	    if (garageBody.getOpeningTimes() == null) {
 	        return;
 	    }
-	  
-	    Map<DayOfWeek, GarageOpeningTime> horairesExistants = garageToUpdate.getGarageOpeningTimes();
-	    Map<DayOfWeek, GarageOpeningTime> nouveauxHoraires = garageBody.getGarageOpeningTimes();
 
-	    // Mettre à jour ou ajouter de nouveaux horaires
+	    Map<DayOfWeek, GarageOpeningTime> horairesExistants = garageToUpdate.getOpeningTimes();
+	    Map<DayOfWeek, GarageOpeningTime> nouveauxHoraires = garageBody.getOpeningTimes();
+
+	    // Gérer l'ajout et la mise à jour des horaires
 	    nouveauxHoraires.forEach((jour, nouvelHoraire) -> {
 	        GarageOpeningTime horaireExistant = horairesExistants.get(jour);
 
 	        if (horaireExistant == null) {
-	        	
-	            // Ajouter les horaires d'un nouveau jour
-	            horairesExistants.put(jour, nouvelHoraire);
+	            // Créer un nouvel horaire pour un jour inexistant
+	            GarageOpeningTime nouvelHoraireJour = new GarageOpeningTime();
+	            nouvelHoraireJour.setDayOfWeek(jour);
+
+	            nouvelHoraire.getOpeningTimes().forEach(horaire -> {
+	                horaire.setGarageOpeningTime(nouvelHoraireJour);
+	                horaire.setDayOfWeek(jour);
+	                nouvelHoraireJour.getOpeningTimes().add(horaire);
+	            });
+
+	            horairesExistants.put(jour, nouvelHoraireJour);
 	        } else {
-	        	
-	            // Mettre à jour les horaires du jour existant
-	            mettreAJourHorairesJour(horaireExistant, nouvelHoraire);
+
+	            // Mettre à jour les horaires existants
+	            horaireExistant.getOpeningTimes().clear();
+	            nouvelHoraire.getOpeningTimes().forEach(horaire -> {
+	                horaire.setGarageOpeningTime(horaireExistant);
+	                horaire.setDayOfWeek(horaireExistant.getDayOfWeek());
+	                horaireExistant.getOpeningTimes().add(horaire);
+	            });
 	        }
 	    });
-	   
+
 	    // Supprimer les jours qui ne sont plus dans les nouveaux horaires
 	    horairesExistants.keySet().removeIf(jour -> !nouveauxHoraires.containsKey(jour));
-	    
-	    garageToUpdate.setGarageOpeningTimes(horairesExistants);
+
+	    garageToUpdate.setOpeningTimes(horairesExistants);
 	}
 
 	private void mettreAJourHorairesJour(GarageOpeningTime horaireExistant, GarageOpeningTime nouvelHoraire) {
-	    // Effacer les horaires existants et ajouter les nouveaux
-		
-	   horaireExistant.getOpeningTimes().clear();
+	  
+	    
+	    // Supprime les anciens horaires 
+	    horaireExistant.getOpeningTimes().clear();
 	   
-	    // Ajouter les nouveaux horaires et définir la référence du groupe
+
+	    // Vérifie que 'nouvelHoraire' est bien persistant avant d'ajouter les horaires
+	    if (nouvelHoraire.getId() == null) {
+	        garageOpeningTimeRepository.save(nouvelHoraire);
+	    }
+
+	    // Ajouter les nouveaux horaires en leur associant la journée et la référence du groupe
 	    nouvelHoraire.getOpeningTimes().forEach(horaireOuverture -> {
-	        horaireOuverture.setGroup(horaireExistant);
+	        horaireOuverture.setGarageOpeningTime(horaireExistant);
 	        horaireOuverture.setDayOfWeek(horaireExistant.getDayOfWeek());
 	        horaireExistant.getOpeningTimes().add(horaireOuverture);
 	    });
-	    
+
+
+	   
+
+	    // Forcer la mise à jour dans la base de données
+	    garageOpeningTimeRepository.save(horaireExistant);
 	}
+
 
 
 
@@ -145,23 +176,23 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public Garage getGarageById(Long garageId) {
+	public GarageDto getGarageById(Long garageId) {
 		log.info("get garage with ID {}", garageId);
 		Garage garage = garageRepository.findById(garageId).orElseThrow(() -> new GarageNotFoundException(garageId));
 		//return garageMapperImpl.fromGarage(garage);
-		return garage;
+		return garageMapper.toGarageDto(garage);
 	}
 
 	@Override
-	public Page<Garage> listGarages(Pageable pageable) {
+	public Page<GarageDto> listGarages(Pageable pageable) {
 		log.info("get paginated list of garages");
 		Page<Garage> garages = garageRepository.findAll(pageable);
 		
-		return garages;
+		return garages.map(garageMapper::toGarageDto);
 	}
 
 	@Override
-	public List<Garage> searchGaragesByVehicleType(String vehiculeType) {
+	public List<GarageDto> searchGaragesByVehicleType(String vehiculeType) {
 		log.info("search garages by vehicule type {}: ", vehiculeType);
 		try {
 			TypeCarburant type = TypeCarburant.valueOf(vehiculeType.toUpperCase());
@@ -176,7 +207,7 @@ public class GarageServiceImpl implements GarageService {
 					.collect(Collectors.toSet());
 			
 
-			return new ArrayList<>(garages);
+			return new ArrayList<>(garages.stream().map(garage -> garageMapper.toGarageDto(garage)).toList());
 
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("Type de vehicule invalide : " + vehiculeType, e);
@@ -186,11 +217,11 @@ public class GarageServiceImpl implements GarageService {
 	}
 
 	@Override
-	public List<Garage> searchGaragesByAccessory(String accessoryName) {
+	public List<GarageDto> searchGaragesByAccessory(String accessoryName) {
 		log.info("search garages by accessoire  {}: ", accessoryName);
 		List<Garage> garages = garageRepository.findGaragesByAccessory(accessoryName);
 
-		return garages;
+		return garages.stream().map(garage -> garageMapper.toGarageDto(garage)).toList();
 	}
 
 

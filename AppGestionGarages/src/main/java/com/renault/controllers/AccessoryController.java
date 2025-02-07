@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.renault.dtos.AccessoryDto;
 import com.renault.entities.Accessory;
 import com.renault.services.AccessoryService;
 
@@ -28,8 +29,8 @@ public class AccessoryController {
 	
 	
 	@PutMapping("/{accessoryId}")
-	public Accessory updateAccessoire(@PathVariable Long accessoryId,@RequestBody Accessory accessory) {
-		return accessoryService.updateAccessory(accessoryId, accessory);
+	public AccessoryDto updateAccessoire(@PathVariable Long accessoryId,@RequestBody AccessoryDto accessoryDto) {
+		return accessoryService.updateAccessory(accessoryId, accessoryDto);
 		
 	}
 	@DeleteMapping("/{accessoryId}")
@@ -37,7 +38,7 @@ public class AccessoryController {
 		accessoryService.deleteAccessory(accessoryId);
 	}
 	@GetMapping("/byVehicle/{vehicleId}")
-	public List<Accessory> getAccessoiresByVehicule(@PathVariable Long vehicleId){
+	public List<AccessoryDto> getAccessoiresByVehicule(@PathVariable Long vehicleId){
 		return accessoryService.getAccessoriesByVehicule(vehicleId);
 		
 	}
